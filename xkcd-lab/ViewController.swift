@@ -13,9 +13,8 @@ class ViewController: UIViewController {
     @IBOutlet weak var date: UILabel!
     
     let e = M_E
-    var data: NSMutableData!
-    var stringArray: [String]!
-    
+    //var data: NSMutableData!
+    //var stringArray: [String]!
     //var today = NSDate()
     //var currentYear = Int()
     
@@ -23,39 +22,29 @@ class ViewController: UIViewController {
     @IBOutlet weak var Slider: UISlider!
     
     override func viewDidLoad() {
-        super.viewDidLoad()
-        let today = NSDate()
-        let calendar = NSCalendar.currentCalendar()
-        let components = calendar.components(.CalendarUnitMonth | .CalendarUnitYear, fromDate: today)
-        ///currentYear = components.year
-        let currentMonth = components.month
         
+        var today = NSDate()
         var formatter = NSDateFormatter()
-        var percentage: Double = 0.0
-        var someTime: Double = 0.0
-        
-        //formatter.dateStyle = NSDateFormatterStyle.ShortStyle
         formatter.dateFormat = "yyyy"
         var currentYear = formatter.stringFromDate(today)
+        var yearAsDouble = (currentYear as NSString).doubleValue
         
-        //date.text = formatter.stringFromDate(today)
-        
-        //percentage = sqrt((log( + pow(e, 3.0)-3)/(20.3444)))
-        
-        
-        
+        var someTime: Double = 0.0
+ 
         var p = 0.0
-        
         var e3 = exp(3.0)
-        
         var expo = (20.3444 * (pow(p, 3.0))) + 3.0
-        
         var eterms = exp(expo) - e3
         
-        someTime = 2015 - eterms
-        let truncDate = Int(someTime)
-        let dateAsString = String(format:"%f", truncDate)
-        date.text = String(format:"%f", dateAsString)
+        someTime = yearAsDouble - eterms
+        var truncDate = Int(someTime)
+        var dateAsString = String(format:"%d", truncDate)
+        
+        date.text = dateAsString
+        
+        super.viewDidLoad()
+        
+//date.text = String(format:"%f", dateAsString)
         //date.text = String(format: "%f", currentMonth)
         
 //        let urlPath: String = "http://en.wikipedia.org/wiki/2014"
@@ -78,7 +67,7 @@ class ViewController: UIViewController {
         NSURLConnection.sendAsynchronousRequest(request, queue: NSOperationQueue.mainQueue()) {(response, data, error) in
             println(String(NSString(data: data, encoding: NSUTF8StringEncoding)!).stringByReplacingOccurrencesOfString("[^[^<>]+>", withString: "", options: .RegularExpressionSearch, range: nil))
             
-            self.date.text = String(NSString(data: data, encoding: NSUTF8StringEncoding)!).stringByReplacingOccurrencesOfString("<[^>]+>", withString: "", options: .RegularExpressionSearch, range: nil)
+            //self.date.text = String(NSString(data: data, encoding: NSUTF8StringEncoding)!).stringByReplacingOccurrencesOfString("<[^>]+>", withString: "", options: .RegularExpressionSearch, range: nil)
         }
         
         
