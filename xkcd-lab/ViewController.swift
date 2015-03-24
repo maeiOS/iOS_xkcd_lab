@@ -62,18 +62,57 @@ class ViewController: UIViewController {
 //        printString = String(NSString(data: data, encoding: NSUTF8StringEncoding)!).stringByReplacingOccurrencesOfString("<[^>]+>", withString: "", options: .RegularExpressionSearch, range: nil))
         
         
-        let url = NSURL(string: "http://en.wikipedia.org/w/api.php?action=query&explaintext=&prop=extracts&format=json&titles=2015")
+        let url = NSURL(string: "http://en.wikipedia.org/w/api.php?action=query&explaintext=&prop=extracts&format=json&titles=2014")
         let request = NSURLRequest(URL: url!)
-        NSURLConnection.sendAsynchronousRequest(request, queue: NSOperationQueue.mainQueue()) {(response, data, error) in
-            println(String(NSString(data: data, encoding: NSUTF8StringEncoding)!).stringByReplacingOccurrencesOfString("[^[^<>]+>", withString: "", options: .RegularExpressionSearch, range: nil))
-            
+        var response: AutoreleasingUnsafeMutablePointer<NSURLResponse?>=nil;
+        var error: NSErrorPointer = nil
+        var dataVal: NSData = NSURLConnection.sendSynchronousRequest(request, returningResponse: response, error: nil)!
+        var err: NSError
+        //var jsonResult: NSDictionary = NSURLConnection.sendAsynchronousRequest(request, queue: NSOperationQueue.mainQueue()) {(response, data, error) in
+            var extraction: NSDictionary = NSJSONSerialization.JSONObjectWithData(dataVal, options: NSJSONReadingOptions.MutableContainers, error: nil) as NSDictionary;
+        /*
+        let resstr = NSString(data: dataVal, encoding: NSUTF8StringEncoding)
+
+        let weirdNumberExtractor = extraction.valueForKeyPath("query.pages") as String
+        let array = NSString(format: resstr!, locale: nil).componentsSeparatedByString("pages\":{\"")
+            .map { $0.componentsSeparatedByString("\":{\"pageid\") }")}
+            .filter { $0.count > 1 }
+            .map { $0[0] }
+        
+        println(array)
+        */
+        
+        let parse = extraction.valueForKeyPath("query.pages.48630.extract") as String
+        //println(parse);
+        let eventIndex = parse.rangeOfString("== Events ==")
+        let birthIndex = parse.rangeOfString("== Births ==")
+        //println(eventIndex?.startIndex);
+        //println(birthIndex?.endIndex);
+        
+        let range = Range<String.Index>(start: eventIndex!.endIndex as String.Index, end: birthIndex!.startIndex as String.Index);
+        let events = parse.substringWithRange(range);
+        let splits = split(events) {$0 == "\n"}
+        
+        var counter: UInt32 = 0
+        for line in splits {
+            counter += 1
+        }
+        
+        let index = (Int)(arc4random_uniform(counter - 1))
+        var randomEvent = splits[index]
+        
+        println(randomEvent)
+        
+        
+        //(String(NSString(data: data, encoding: NSUTF8StringEncoding)!).stringByReplacingOccurrencesOfString("[^[^<>]+>", withString: "", options: .RegularExpressionSearch, range: nil))
+        
             //self.date.text = String(NSString(data: data, encoding: NSUTF8StringEncoding)!).stringByReplacingOccurrencesOfString("<[^>]+>", withString: "", options: .RegularExpressionSearch, range: nil)
         }
         
         
         
         
-    }
+    
 //    
 //    func connection(connection: NSURLConnection!, didReceiveData data: NSData!){
 //        self.data?.appendData(data)
